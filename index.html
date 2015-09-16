@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="./css/bootstrap.min.css">
+		<link rel="stylesheet" href="./css/comun.css">
+		<title>Borrador de circuitos</title>
+	</head>
+
+	<body class="container text-center">
+
+
+		<h1>Proyecto de autoestudio para Circuitos eléctricos I</h1>
+		<h3>Este es un borrador con funcionalidades limitadas y algo rústico e inútil por el momento.</h3>
+
+		<hr>
+
+		<div id="elementos">
+			<img src="./img/nodo-h.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="h" data-con="iz,de">
+			<img src="./img/nodo-v.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="v" data-con="ar,ab">
+			<img src="./img/nodo-cruz.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="cruz" data-con="iz,de,ar,ab">
+			<img src="./img/nodo-hab.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="hab" data-con="iz,de,ab">
+			<img src="./img/nodo-har.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="har" data-con="iz,de,ar">
+			<img src="./img/nodo-vde.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="vde" data-con="ar,ab,de">
+			<img src="./img/nodo-viz.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="viz" data-con="ar,ab,iz">
+			<img src="./img/nodo-id.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="id" data-con="iz,ar">
+			<img src="./img/nodo-ii.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="ii" data-con="ar,de">
+			<img src="./img/nodo-sd.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="sd" data-con="iz,ab">
+			<img src="./img/nodo-si.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="si" data-con="de,ab">
+			<img src="./img/R-h.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="R" data-ori="h" data-con="iz,de">
+			<img src="./img/R-v.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="R" data-ori="v" data-con="ar,ab">
+		</div>
+
+		<div id="tablero" class="tablero center-block">
+			<div class="fila" data-pos="1">
+				<div class="celda" data-pos="1"></div>
+				<div class="celda" data-pos="2"></div>
+				<div class="celda" data-pos="3"></div>
+				<div class="celda" data-pos="4"></div>
+				<div class="celda" data-pos="5"></div>
+				<div class="celda" data-pos="6"></div>
+				<div class="celda" data-pos="7"></div>
+				<div class="celda" data-pos="8"></div>
+				<div class="celda" data-pos="9"></div>
+				<div class="celda" data-pos="10"></div>
+				<div class="celda" data-pos="11"></div>
+				<div class="celda" data-pos="12"></div>
+				<div class="celda" data-pos="13"></div>
+				<div class="celda" data-pos="14"></div>
+				<div class="celda" data-pos="15"></div>
+				<div class="celda" data-pos="16"></div>
+				<div class="celda" data-pos="17"></div>
+				<div class="celda" data-pos="18"></div>
+				<div class="celda" data-pos="19"></div>
+				<div class="celda" data-pos="20"></div>
+			</div>
+			<div class="fila" data-pos="2">
+				<div class="celda" data-pos="1"></div>
+				<div class="celda" data-pos="2"></div>
+				<div class="celda" data-pos="3"></div>
+				<div class="celda" data-pos="4"></div>
+				<div class="celda" data-pos="5"></div>
+				<div class="celda" data-pos="6"></div>
+				<div class="celda" data-pos="7"></div>
+				<div class="celda" data-pos="8"></div>
+				<div class="celda" data-pos="9"></div>
+				<div class="celda" data-pos="10"></div>
+				<div class="celda" data-pos="11"></div>
+				<div class="celda" data-pos="12"></div>
+				<div class="celda" data-pos="13"></div>
+				<div class="celda" data-pos="14"></div>
+				<div class="celda" data-pos="15"></div>
+				<div class="celda" data-pos="16"></div>
+				<div class="celda" data-pos="17"></div>
+				<div class="celda" data-pos="18"></div>
+				<div class="celda" data-pos="19"></div>
+				<div class="celda" data-pos="20"></div>
+			</div>
+			<div class="fila" data-pos="3">
+				<div class="celda" data-pos="1"></div>
+				<div class="celda" data-pos="2"></div>
+				<div class="celda" data-pos="3"></div>
+				<div class="celda" data-pos="4"></div>
+				<div class="celda" data-pos="5"></div>
+				<div class="celda" data-pos="6"></div>
+				<div class="celda" data-pos="7"></div>
+				<div class="celda" data-pos="8"></div>
+				<div class="celda" data-pos="9"></div>
+				<div class="celda" data-pos="10"></div>
+				<div class="celda" data-pos="11"></div>
+				<div class="celda" data-pos="12"></div>
+				<div class="celda" data-pos="13"></div>
+				<div class="celda" data-pos="14"></div>
+				<div class="celda" data-pos="15"></div>
+				<div class="celda" data-pos="16"></div>
+				<div class="celda" data-pos="17"></div>
+				<div class="celda" data-pos="18"></div>
+				<div class="celda" data-pos="19"></div>
+				<div class="celda" data-pos="20"></div>
+			</div>
+			<div class="fila" data-pos="4">
+				<div class="celda" data-pos="1"></div>
+				<div class="celda" data-pos="2"></div>
+				<div class="celda" data-pos="3"></div>
+				<div class="celda" data-pos="4"></div>
+				<div class="celda" data-pos="5"></div>
+				<div class="celda" data-pos="6"></div>
+				<div class="celda" data-pos="7"></div>
+				<div class="celda" data-pos="8"></div>
+				<div class="celda" data-pos="9"></div>
+				<div class="celda" data-pos="10"></div>
+				<div class="celda" data-pos="11"></div>
+				<div class="celda" data-pos="12"></div>
+				<div class="celda" data-pos="13"></div>
+				<div class="celda" data-pos="14"></div>
+				<div class="celda" data-pos="15"></div>
+				<div class="celda" data-pos="16"></div>
+				<div class="celda" data-pos="17"></div>
+				<div class="celda" data-pos="18"></div>
+				<div class="celda" data-pos="19"></div>
+				<div class="celda" data-pos="20"></div>
+			</div>
+			<div class="fila" data-pos="5">
+				<div class="celda" data-pos="1"></div>
+				<div class="celda" data-pos="2"></div>
+				<div class="celda" data-pos="3"></div>
+				<div class="celda" data-pos="4"></div>
+				<div class="celda" data-pos="5"></div>
+				<div class="celda" data-pos="6"></div>
+				<div class="celda" data-pos="7"></div>
+				<div class="celda" data-pos="8"></div>
+				<div class="celda" data-pos="9"></div>
+				<div class="celda" data-pos="10"></div>
+				<div class="celda" data-pos="11"></div>
+				<div class="celda" data-pos="12"></div>
+				<div class="celda" data-pos="13"></div>
+				<div class="celda" data-pos="14"></div>
+				<div class="celda" data-pos="15"></div>
+				<div class="celda" data-pos="16"></div>
+				<div class="celda" data-pos="17"></div>
+				<div class="celda" data-pos="18"></div>
+				<div class="celda" data-pos="19"></div>
+				<div class="celda" data-pos="20"></div>
+			</div>
+			<div class="fila" data-pos="6">
+				<div class="celda" data-pos="1"></div>
+				<div class="celda" data-pos="2"></div>
+				<div class="celda" data-pos="3"></div>
+				<div class="celda" data-pos="4"></div>
+				<div class="celda" data-pos="5"></div>
+				<div class="celda" data-pos="6"></div>
+				<div class="celda" data-pos="7"></div>
+				<div class="celda" data-pos="8"></div>
+				<div class="celda" data-pos="9"></div>
+				<div class="celda" data-pos="10"></div>
+				<div class="celda" data-pos="11"></div>
+				<div class="celda" data-pos="12"></div>
+				<div class="celda" data-pos="13"></div>
+				<div class="celda" data-pos="14"></div>
+				<div class="celda" data-pos="15"></div>
+				<div class="celda" data-pos="16"></div>
+				<div class="celda" data-pos="17"></div>
+				<div class="celda" data-pos="18"></div>
+				<div class="celda" data-pos="19"></div>
+				<div class="celda" data-pos="20"></div>
+			</div>
+		</div>
+
+
+		<button class="btn btn-primary" onclick="comprobacion.circuito()">Comprobar circuito</button>
+		<button class="btn btn-primary" onclick="comprobacion.identificarNodos()">identificar nodos</button>
+
+
+
+
+
+		<div id="valores-resistencia" class="modal fade">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header text-left">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Valores del elemento</h4>
+					</div>
+					<div class="modal-body" style="overflow:auto">
+						<label class="col-xs-12 control-label text-left">Valor de la resistencia:</label>
+						<div class="col-xs-12">
+							<input type="text" name="valor" class="form-control">
+							<!--<div class="input-group-btn" style="overflow:visible">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ω <span class="caret"></span></button>
+								<ul class="dropdown-menu dropdown-menu-right" style="min-width:10px">
+								<li><a href="#">Ω</a></li>
+								<li><a href="#">KΩ</a></li>
+								</ul>
+							</div>  -->
+						</div><!-- /input-group -->
+						<div class="btn-group" data-toggle="buttons" style="margin-top:10px">
+							<label class="btn btn-success active">
+								<input type="radio" name="unidad" id="_" autocomplete="off" checked> Ω
+							</label>
+							<label class="btn btn-success">
+								<input type="radio" name="unidad" id="K" autocomplete="off"> KΩ
+							</label>
+						</div>
+						<br>
+					</div>
+					<div class="modal-footer" style="text-align:center">
+						<input type="hidden" name="fila">
+						<input type="hidden" name="columna">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="button" class="btn btn-success" onclick="elemento.guardarR()">Guardar</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+		<div id="valores-corriente" class="modal fade">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header text-left">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Valores del elemento</h4>
+					</div>
+					<div class="modal-body" style="overflow:auto">
+						<label class="col-xs-12 control-label text-left">Corriente suministrada:</label>
+						<div class="col-xs-12">
+							<input type="text" class="form-control">
+						</div>
+						<div class="btn-group" data-toggle="buttons" style="margin-top:10px">
+							<label class="btn btn-success">
+								<input type="radio" name="unidad" id="unim" autocomplete="off"> mA
+							</label>
+							<label class="btn btn-success active">
+								<input type="radio" name="unidad" id="uni" autocomplete="off" checked> A
+							</label>
+						</div>
+						<br>
+					</div>
+					<div class="modal-footer" style="text-align:center">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="button" class="btn btn-success">Guardar</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+		
+		<script src="./js/comun.js"></script>
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+	</body>
+</html>
