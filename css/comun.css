@@ -1,0 +1,49 @@
+
+.tablero{
+	margin-top: 20px;
+	border: 1px solid green;
+	height: 300px;
+	width: 1002px; /* ------------- */
+}
+
+.fila {
+	height: 50px;
+	width: 1000px;
+}
+
+.celda{
+	/*border-top: 1px solid silver;
+	border-left: 1px solid silver;*/
+	position: relative;
+	background-image: url('../img/cuadricula.png');
+	height: 50px;
+	width: 50px;
+	float: left;
+}
+
+.arrastrable{
+	cursor: move;
+}
+
+.texto-15{
+	font-size: 15px;
+}
+
+.texto-20{
+	font-size: 20px;
+}
+
+.texto-30{
+	font-size: 30px;
+}
+
+#elementos>img{
+	border: 1px dotted silver;
+	margin: 5px;
+}
+
+.valores{
+	position: absolute;
+	top: 30px;
+	left: 10px;
+}
