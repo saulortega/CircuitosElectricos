@@ -11,7 +11,7 @@
 
 
 		<h1>Proyecto de autoestudio para Circuitos eléctricos I</h1>
-		<h3>Este es un borrador con funcionalidades limitadas y algo rústico e inútil por el momento.</h3>
+		<!--<h3>Este es un borrador con funcionalidades limitadas y algo rústico e inútil por el momento.</h3>-->
 
 		<hr>
 
@@ -29,6 +29,14 @@
 			<img src="./img/nodo-si.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="nodo" data-ori="si" data-con="de,ab">
 			<img src="./img/R-h.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="R" data-ori="h" data-con="iz,de">
 			<img src="./img/R-v.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="R" data-ori="v" data-con="ar,ab">
+			<!--<img src="./img/V-h_+-.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="V" data-ori="h" data-con="iz,de" data-pol="+-">
+			<img src="./img/V-v_+-.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="V" data-ori="v" data-con="ar,ab" data-pol="+-">
+			<img src="./img/V-h_-+.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="V" data-ori="h" data-con="iz,de" data-pol="-+">
+			<img src="./img/V-v_-+.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="V" data-ori="v" data-con="ar,ab" data-pol="-+">-->
+			<img src="./img/I-h_+-.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="I" data-ori="h" data-con="iz,de" data-pol="+-">
+			<img src="./img/I-v_+-.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="I" data-ori="v" data-con="ar,ab" data-pol="+-">
+			<img src="./img/I-h_-+.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="I" data-ori="h" data-con="iz,de" data-pol="-+">
+			<img src="./img/I-v_-+.png" class="arrastrable" draggable="true" data-origen="caja" data-tipo="I" data-ori="v" data-con="ar,ab" data-pol="-+">
 		</div>
 
 		<div id="tablero" class="tablero center-block">
@@ -167,9 +175,37 @@
 		</div>
 
 
-		<button class="btn btn-primary" onclick="comprobacion.circuito()">Comprobar circuito</button>
-		<button class="btn btn-primary" onclick="comprobacion.identificarNodos()">identificar nodos</button>
+		<div id="mensaje-error" class="alert alert-warning" style="display:none;font-weight:bold;margin-top:10px"></div>
+		<div id="nomenclatura" class="well"></div>
 
+		<button class="btn btn-lg btn-success" onclick="empezar()">Empezar</button>
+
+		<hr>
+
+		<div class="col-md-4 text-left">
+			<h3>Acerca de</h3>
+			<p>Este es un proyecto de autoestudio para Circuitos Eléctricos I, Ingeniería de Telecomunicaciones, Politécnico Grancolombiano.</p>
+			<p>Este grupo está integrado por Saúl Ortega (desarrollo), Kevin Rodríguez (análisis y pruebas), y Rodrigo (logística).</p>
+			<p>El objetivo de este proyecto es desarrollar una aplicación con capacidad de analizar y desarrollar un circuito electrónico mostrando el paso a paso mediante las leyes de Kirchoff. Inicialmente se prevé que analice y plantee las ecuaciones mediante análisis de nodos. Posteriormente puede ampliarse para realizar también análisis de mallas.</p>
+		</div>
+
+		<div class="col-sm-6 col-md-4 text-left">
+			<h3>Uso</h3>
+			<p>Arrastre los elementos de la "caja de herramientas" de la parte superior al tablero y dibuje un circuito. Una vez esté hecho el esquema del circuito, pulse el botón "Empezar".</p>
+			<p>La aplicación validará la correcta estructura del circuito, y, si el circuito se encuentra bien hecho, marcará de manera automática los nodos y las polaridades en las resistencias.</p>
+			<p>En esta fase de desarrollo la aplicación aún no tiene la capacidad de interpretar valores absolutos dados a los elementos del circuito; sólo dibuja el esquema de nodos y polaridades.</p>
+		</div>
+
+		<div class="col-sm-6 col-md-4 text-left">
+			<h3>Funcionalidades</h3>
+			<p>Este proyecto se encuentra aún en una fase de desarrollo muy temprana y posee funcionalidades muy limitadas. A continuación se describe las carácterísticas hasta el momento:</p>
+			<ul>
+				<li>Valida la correcta o errónea construcción del circuito.</li>
+				<li>Encuentra y marca los nodos no triviales.</li>
+				<li>Crea automáticamente la nomenclatura de los nodos encontrados, según el orden en que se encuentran.</li>
+				<li>Dibuja la polaridad de las resistencias según la nomenclatura de los nodos.</li>
+			</ul>
+		</div>
 
 
 
@@ -246,8 +282,8 @@
 
 
 		
-		<script src="./js/comun.js"></script>
 		<script src="./js/jquery.min.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/comun.js"></script>
 	</body>
 </html>

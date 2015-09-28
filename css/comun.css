@@ -42,8 +42,38 @@
 	margin: 5px;
 }
 
-.valores{
+.valores {
 	position: absolute;
 	top: 30px;
 	left: 10px;
+}
+
+.polaridad {
+	position: absolute;
+	font-size: 18px;
+	font-weight: bold;
+	color: orange;
+}
+
+.polaridad-h {
+	white-space: nowrap;
+	top: 3px;
+	left: 5px;
+}
+
+.polaridad-v {
+	width: 15px;
+	word-wrap: break-word;
+	top: 2px;
+	left: 7px;
+}
+
+.elemento-discontinuo {
+	position: absolute;
+	color: red;
+}
+
+#nomenclatura {
+	display: none;
+	margin: 20px;
 }
