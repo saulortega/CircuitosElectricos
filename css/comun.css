@@ -77,3 +77,22 @@
 	display: none;
 	margin: 20px;
 }
+
+.icono-nodo {
+	position:absolute;
+	font-size:20px;
+	color:blue;
+	top:15px;
+	left:15px;
+	display:none;
+}
+
+.identificador-nodo {
+	position: absolute;
+	font-size: 20px;
+	color: blue;
+	top: -10px;
+	left: 18px;
+	display: none;
+	/*display: inline-block;*/
+}
