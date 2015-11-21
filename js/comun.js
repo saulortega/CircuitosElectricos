@@ -1042,4 +1042,3 @@ escucharEventos();
 //3. nodos.dibujar();
 //4. nodos.polaridadResistencias();
 
-//pendiente dibujar polaridad en resistencias. Ya no sirve como antes. Hay que recalcular la dirección de las resistencias... quizás cabiar iz y de por horizontal...
