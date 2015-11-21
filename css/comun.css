@@ -44,8 +44,9 @@
 
 .valores {
 	position: absolute;
-	top: 30px;
-	left: 10px;
+	font-size: 10px;
+	top: 35px;
+	left: 8px;
 }
 
 .polaridad {
@@ -53,6 +54,22 @@
 	font-size: 18px;
 	font-weight: bold;
 	color: orange;
+}
+
+.nombre-elemento {
+	position: absolute;
+	font-size: 10px;
+	font-weight: bold;
+}
+
+.nombre-elemento.horizontal {
+	top: 3px;
+	left: 19px;
+}
+
+.nombre-elemento.vertical {
+	top: 20px;
+	left: 5px;
 }
 
 .polaridad-h {

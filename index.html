@@ -210,40 +210,31 @@
 
 
 
+
+
+
+
 		<div id="valores-resistencia" class="modal fade">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content">
-					<div class="modal-header text-left">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Valores del elemento</h4>
-					</div>
-					<div class="modal-body" style="overflow:auto">
-						<label class="col-xs-12 control-label text-left">Valor de la resistencia:</label>
-						<div class="col-xs-12">
-							<input type="text" name="valor" class="form-control">
-							<!--<div class="input-group-btn" style="overflow:visible">
-								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ω <span class="caret"></span></button>
-								<ul class="dropdown-menu dropdown-menu-right" style="min-width:10px">
-								<li><a href="#">Ω</a></li>
-								<li><a href="#">KΩ</a></li>
+					<div class="modal-body form-inline">
+						<div class="input-group">
+							<input type="text" id="valor-resistencia" class="form-control" placeholder="Valor de la resistencia">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="la-unidad">Ω</span> <span class="caret"></span></button>
+								<ul class="dropdown-menu dropdown-menu-right">
+									<li><a href="javascript:elemento.unidades('R','')">Ω</a></li>
+									<li><a href="javascript:elemento.unidades('R','K')">KΩ</a></li>
 								</ul>
-							</div>  -->
+							</div><!-- /btn-group -->
 						</div><!-- /input-group -->
-						<div class="btn-group" data-toggle="buttons" style="margin-top:10px">
-							<label class="btn btn-success active">
-								<input type="radio" name="unidad" id="_" autocomplete="off" checked> Ω
-							</label>
-							<label class="btn btn-success">
-								<input type="radio" name="unidad" id="K" autocomplete="off"> KΩ
-							</label>
-						</div>
 						<br>
 					</div>
-					<div class="modal-footer" style="text-align:center">
+					<div class="modal-footer">
 						<input type="hidden" name="fila">
 						<input type="hidden" name="columna">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-						<button type="button" class="btn btn-success" onclick="elemento.guardarR()">Guardar</button>
+						<input type="hidden" name="unidad">
+						<button type="button" class="btn btn-sm btn-block btn-info" onclick="elemento.guardar('resistencia')">Guardar</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
@@ -253,28 +244,24 @@
 		<div id="valores-corriente" class="modal fade">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content">
-					<div class="modal-header text-left">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Valores del elemento</h4>
-					</div>
-					<div class="modal-body" style="overflow:auto">
-						<label class="col-xs-12 control-label text-left">Corriente suministrada:</label>
-						<div class="col-xs-12">
-							<input type="text" class="form-control">
-						</div>
-						<div class="btn-group" data-toggle="buttons" style="margin-top:10px">
-							<label class="btn btn-success">
-								<input type="radio" name="unidad" id="unim" autocomplete="off"> mA
-							</label>
-							<label class="btn btn-success active">
-								<input type="radio" name="unidad" id="uni" autocomplete="off" checked> A
-							</label>
-						</div>
+					<div class="modal-body form-inline">
+						<div class="input-group">
+							<input type="text" id="valor-corriente" class="form-control" placeholder="Corriente suministrada">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="la-unidad">A</span> <span class="caret"></span></button>
+								<ul class="dropdown-menu dropdown-menu-right">
+									<li><a href="javascript:elemento.unidades('I','')">A</a></li>
+									<li><a href="javascript:elemento.unidades('I','m')">mA</a></li>
+								</ul>
+							</div><!-- /btn-group -->
+						</div><!-- /input-group -->
 						<br>
 					</div>
-					<div class="modal-footer" style="text-align:center">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-						<button type="button" class="btn btn-success">Guardar</button>
+					<div class="modal-footer">
+						<input type="hidden" name="fila">
+						<input type="hidden" name="columna">
+						<input type="hidden" name="unidad">
+						<button type="button" class="btn btn-sm btn-block btn-info" onclick="elemento.guardar('corriente')">Guardar</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->

@@ -154,12 +154,6 @@ var posicion = { //Posicionamiento de una celda
 
 
 var elemento = {
-	/*'posicion':function(celda){ //Horizontal o vertical
-		//
-	},*/
-	'direccion':function(){ //Dirección de corroente o voltaje...
-		//
-	},
 	'dibujar':function(celda){
 		//Limpiar:
 		//comprobacion.limpiar();
@@ -170,6 +164,7 @@ var elemento = {
 		}
 		//var I = '<img src="./img/R-h.png" class="arrastrable" draggable="true" data-origen="tablero" data-pos="H">'; //data-pos quemado,verificar después
 		var dibujo='<img src="./img/'+laImagen+'.png" class="arrastrable" draggable="true" data-origen="tablero" data-tipo="'+tipoElemento+'" data-ori="'+orientacion+'" data-con="'+conexiones+'" data-pol="'+polaridad+'" data-val="" onclick="elemento.valores(this)">';
+		dibujo=dibujo+'<span class="nombre-elemento" style="display:none"></span>';
 		dibujo=dibujo+'<span class="valores"></span>';
 		dibujo=dibujo+'<span class="polaridad" style="display:none"></span>';
 		if(tipoElemento=='nodo'){
@@ -194,8 +189,11 @@ var elemento = {
 			el='corriente';
 		} else if(el=='V'){
 			el='voltaje';
+		} else {
+			if(depuracion){
+				console.log('Error: Tipo de elemento desconocido: '+el);
+			}
 		}
-		//$(self).attr('data-edi',true); //Editando...
 		var celda = self.parentElement;
 		var fi = posicion.fila(celda);
 		var co = posicion.columna(celda);
@@ -204,7 +202,58 @@ var elemento = {
 		$('#valores-'+el+' input[name="columna"]').val(co);
 		$('#valores-'+el).modal('show');
 	},
-	'guardarR':function(){
+	'unidades':function(tipo,unidad){
+		if(tipo=='R'){
+			var t='resistencia';
+			var u='Ω';
+		} else if(tipo=='I'){
+			var t='corriente';
+			var u='A';
+		} else if(tipo=='V'){
+			var t='voltaje';
+			var u='V';
+		}
+		u=unidad+u;
+		$('#valores-'+t).find('.la-unidad').text(u);
+		$('#valores-'+t+' input[name="unidad"]').val(unidad);
+		
+	},
+	'guardar':function(tipo){
+		var fil = $('#valores-'+tipo+' input[name="fila"]').val();
+		var col = $('#valores-'+tipo+' input[name="columna"]').val();
+		var uni = $('#valores-'+tipo+' input[name="unidad"]').val();
+		if(uni===undefined){uni='';}
+		var val = $('#valor-'+tipo).val();
+		val=val.replace(' ','');
+		if(isNumeric(val)){
+			val=parseFloat(val);
+		} else {
+			alert('Escriba un valor numérico.');
+			return;
+		}
+
+		if(tipo=='resistencia'){
+			var u=uni+'Ω';
+		} else if(tipo=='corriente'){
+			var u=uni+'A';
+		} else if(tipo=='voltaje'){
+			var u=uni+'V';
+		}
+
+		var unidadBasica=val;
+		if(uni=='K'){
+			unidadBasica=val*1000;
+		} else if(uni=='m'){
+			unidadBasica=val/1000;
+		} else if(uni=='μ'){
+			unidadBasica=val/1000000;
+		}
+
+		$('#tablero>div.fila[data-pos="'+fil+'"]>div.celda[data-pos="'+col+'"]>img').attr('data-val',unidadBasica).siblings('span.valores').text(val+' '+u);
+		$('#valores-'+tipo).modal('hide');
+		elemento.limpiar();
+	},
+	/*'guardarR':function(){ //Esta será reemplazada por anerior...
 		var fi = $('#valores-resistencia input[name="fila"]').val();
 		var co = $('#valores-resistencia input[name="columna"]').val();
 		var uni = $('input[name="unidad"][id="_"]').prop('checked');
@@ -213,12 +262,12 @@ var elemento = {
 			var un = 'Ω';
 			var val = $('#valores-resistencia input[name="valor"]').val();
 			var unidadBasica = val;
-		}else if(uniK){
+		} else if(uniK){
 			var un = 'KΩ';
 			var val = $('#valores-resistencia input[name="valor"]').val();
 			var unidadBasica = val*1000;
 		} else {
-			alert('Seleccione las unidades d emedida.');
+			alert('Seleccione las unidades de medida.');
 			return;
 		}
 		$('#tablero>div.fila[data-pos="'+fi+'"]>div.celda[data-pos="'+co+'"]>img').attr('data-val',unidadBasica).siblings('span.valores').text(val+' '+un);
@@ -226,12 +275,15 @@ var elemento = {
 		$('#valores-resistencia input[name="columna"]').val(co);
 		$('#valores-resistencia').modal('hide');
 		elemento.limpiar();
-	},
+	},*/
 	'limpiar':function(){
 		$('input[type="text"]').val('');
 		$('input[type="hidden"]').val('');
-		$('input[type="radio"]').prop('checked',false).parent('label').removeClass('active');
-		$('input[type="checkbox"]').prop('checked',false);
+		$('#valores-resistencia').find('.la-unidad').text('Ω');
+		$('#valores-corriente').find('.la-unidad').text('A');
+		$('#valores-voltaje').find('.la-unidad').text('V');
+		//$('input[type="radio"]').prop('checked',false).parent('label').removeClass('active');
+		//$('input[type="checkbox"]').prop('checked',false);
 	}
 }
 
@@ -341,172 +393,10 @@ var circuito = {
 		}
 		return true;
 	},
-	/*'recorrer':function(accion){
+	'recorrer':function(){
 		var accion = accion || false;
 		var cadaNodo = $('#tablero .celda img[data-tipo="nodo"]');
 		recorridos=[];
-		//var identificadorNodoInicial="@"; //--------------------
-		//var valorNodoInicial=100; //--------------------
-		//var heredadoNodoInicial= // ---------------
-		//var nomenclatura=[]; // ---------------
-		$.each(cadaNodo,function(){
-			var lasConexiones = $(this).attr('data-con');
-			lasConexiones=lasConexiones.split(',');
-			var buscaFila;
-			var buscaColumna;
-			var buscoCelda;
-			if(lasConexiones.length>=3){
-				var identificadorNodoInicial = $(this).siblings('.identificador-nodo').attr('data-identificador');
-				var valorNodoInicial = $(this).siblings('.identificador-nodo').attr('data-valor');
-				var heredadoNodoInicial = $(this).attr('data-her');
-				console.log('Valor de nodo: '+valorNodoInicial);
-				var cel = this.parentElement;
-				var fi = posicion.fila(cel);
-				var co = posicion.columna(cel);
-				var fila;
-				var columna;
-				$.each(lasConexiones,function(ind,ele){
-					if(ele=='ar'){
-						fila=fi-1;
-						columna=co;
-					} else if(ele=='ab'){
-						fila=fi+1;
-						columna=co;
-					} else if(ele=='iz'){
-						columna=co-1;
-						fila=fi;
-					} else if(ele=='de'){
-						columna=co+1;
-						fila=fi;
-					}
-					var ruta=ele;
-					var encuentroNodo=false;
-					var i=0;
-					console.log('antes de entrar al bucle');
-					var rstncs=[];
-					var encuentroElemento=false;
-					do {
-						var fil=fila;
-						var col=columna;
-						console.log('fila: '+fil+'_ columna: '+col);
-						var elElemento = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img');
-						if(elElemento.length>0){
-							var tipoElmnto = $(elElemento).attr('data-tipo');
-							if(tipoElmnto=='R'){
-								rstncs.push(fila+'-'+columna+'/'+ruta);
-							}
-							if(tipoElmnto!='nodo'){
-								encuentroElemento=true;
-							}
-							console.log(elElemento);
-							var cnxsElmnto = $(elElemento).attr('data-con');
-							var cadena = 'ubicacion='+fila+'-'+columna+'/tipo='+tipoElmnto+'/conexiones='+cnxsElmnto;
-							cnxsElmnto=cnxsElmnto.split(',');
-							if(cnxsElmnto.length>=3){ //Nodo encontrado, detengo la búsqueda
-								var identificadorNodoFinal = $(elElemento).siblings('.identificador-nodo').attr('data-identificador');
-								var valorNodoFinal = $(elElemento).siblings('.identificador-nodo').attr('data-valor');
-								//Comprobación para evitar repetir mismo recorrido en sentido contrario:
-								var nuevoRecorrido=true;
-								$.each(recorridos,function(ii,obj){
-									if(obj.identificadorNodoInicial==identificadorNodoFinal && obj.identificadorNodoFinal==identificadorNodoInicial){
-										nuevoRecorrido=false;
-										return false;
-									}
-								});
-								if(nuevoRecorrido){
-									//var ASCII = identificadorNodoInicial.charCodeAt(); //----------
-									//ASCII=((ASCII+1 >= 65 && ASCII+1 <= 90)) ? ASCII+1 : ASCII;  //----------
-									//identificadorNodoInicial=String.fromCharCode(ASCII); //----------
-									//nomenclatura.push(identificadorNodoInicial); //----------
-									var esteRecorrido={'identificadorNodoInicial':identificadorNodoInicial,'identificadorNodoFinal':identificadorNodoFinal,'valorNodoInicial':valorNodoInicial,'valorNodoFinal':valorNodoFinal,'resistencias':rstncs}
-
-									recorridos.push(esteRecorrido);
-									/ ----- *if(!encuentroElemento){ //Si es el mismo nodo...
-										var her = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img').attr('data-her');
-										if(!her){
-											if(heredadoNodoInicial){
-												var heredado=heredadoNodoInicial;
-											} else {
-												var heredado=identificadorNodoInicial;
-											}
-											$('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img').attr('data-her',heredado);
-										}
-									}* ----- /
-								}
-								i=100;
-							} else {
-								var yaEntré=false;
-								$.each(cnxsElmnto,function(i,e){
-									var ladoOpuesto=opuesto(ruta);
-									//console.log('esta ruta: '+e)
-									//console.log('lado opuesto: '+ladoOpuesto);
-									//console.log('ruta: '+ruta);
-									if(ladoOpuesto!=e && !yaEntré){
-										yaEntré=true;
-										if(e=='ar'){
-											fila=fil-1;
-										} else if(e=='ab'){
-											fila=fil+1;
-										} else if(e=='iz'){
-											columna=col-1;
-										} else if(e=='de'){
-											columna=col+1;
-										}
-										ruta=e
-									}
-								});
-							}
-							console.log('dentro del bucle: '+cadena);
-						} else {
-							i=100;
-							if(depuracion){
-								console.log('Error: No se encontró ningún elemento.')
-							}
-						}
-						i++;
-						console.log(i)
-					} while (i<20);
-					//console.log(fila+'_'+columna);
-				});
-			}
-		});
-		if(accion=='dibujarPolaridades'){
-			var contador=0;
-			$.each(recorridos,function(ind,ele){
-				if(ind==0){
-					cuenta=contador;
-				} else {
-					cuenta=contador+800;
-				}
-				$.each(ele.resistencias,function(i,e){
-					var r=e.split('/');
-					var d=r[1];
-					var pos=r[0].split('-');
-					var f=pos[0];
-					var c=pos[1];
-					var vni=parseInt(ele.valorNodoInicial);
-					var vnf=parseInt(ele.valorNodoFinal);
-					if(vni<vnf){
-						d=opuesto(d);
-					}
-					contador=(i*800)+cuenta;
-					setTimeout(function(){
-						dibujar.polaridad(f,c,d);
-					},contador);
-				});
-			});
-		} else if(accion='dibujarNodos'){
-			//
-		}
-	},*/
-	'recorrer':function(){ //Esta función reemplazará a la anterior....------------
-		var accion = accion || false;
-		var cadaNodo = $('#tablero .celda img[data-tipo="nodo"]');
-		recorridos=[];
-		//var identificadorNodoInicial="@"; //--------------------
-		//var valorNodoInicial=100; //--------------------
-		//var heredadoNodoInicial= // ---------------
-		//var nomenclatura=[]; // ---------------
 		$.each(cadaNodo,function(){
 			var lasConexiones = $(this).attr('data-con');
 			lasConexiones=lasConexiones.split(',');
@@ -553,14 +443,14 @@ var circuito = {
 						var elElemento = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img');
 						if(elElemento.length>0){
 							var tipoElmnto = $(elElemento).attr('data-tipo');
-							var orientacionElmnto = $(elElemento).attr('data-ori');
+							//var orientacionElmnto = $(elElemento).attr('data-ori');
 							if(tipoElmnto=='R'){
-								//rstncs.push(fila+'-'+columna+'/'+ruta);
-								rstncs.push(fila+'-'+columna+'/'+orientacionElmnto);
+								rstncs.push(fila+'-'+columna+'/'+ruta);
+								//rstncs.push(fila+'-'+columna+'/'+orientacionElmnto);
 							} else if(tipoElmnto=='I'){
-								ftsCrnt.push(fila+'-'+columna+'/'+orientacionElmnto);
+								ftsCrnt.push(fila+'-'+columna+'/'+ruta);
 							} else if(tipoElmnto=='V'){
-								ftsVltj.push(fila+'-'+columna+'/'+orientacionElmnto);
+								ftsVltj.push(fila+'-'+columna+'/'+ruta);
 							}
 							if(tipoElmnto!='nodo'){
 								encuentroElemento=true;
@@ -653,11 +543,6 @@ var circuito = {
 
 
 
-//Esta funcion va al final de todo...
-escucharEventos();
-
-
-
 
 
 //Obtener la conexión opuesta a la actual:
@@ -710,7 +595,7 @@ var dibujar={
 			orntcn='polaridad-v';
 		} else {
 			if(depuracion){
-				console.log('Error: No se recibió una dirección válida.');
+				console.log('Error: No se recibió una dirección válida: '+direccion);
 			}
 		}
 		$(r).siblings('.polaridad').addClass(orntcn).html(p).show(800);
@@ -787,8 +672,11 @@ function empezar(){
 	if(comprobacion){
 		circuito.recorrer();
 		nodos.identificar();
-		var t=nodos.dibujar();
-		nodos.polaridadResistencias(t);
+		var t1=nodos.nombresElementos();
+		var t2=nodos.dibujar(t1);
+		var t3=nodos.polaridadResistencias(t2);
+		console.log('t1: '+t1)
+		console.log('t2: '+t2)
 	} else {
 		return;
 	}
@@ -802,6 +690,8 @@ var ubiNodos; //Coordenadas
 var ideNodos; //Identificador
 var valNodos; //Valor
 var nodosUnicos;
+//var nodosIdentificadores;
+var nodosValores;
 
 
 
@@ -924,37 +814,31 @@ var nodos = {
 	'polaridadResistencias':function(contadorInicial){
 		var contadorInicial = contadorInicial || 0;
 		var contador=contadorInicial;
-		//var inc=0;
 		$.each(recorridos,function(ind,ele){
 			if(ele['resistencias'].length>0){
-				//inc++;
 				var fcI=ele['identificadorNodoInicial'].split('-');
 				var fcF=ele['identificadorNodoFinal'].split('-');
-				var fI=fcI[0];
-				var cI=fcI[1];
-				var fF=fcF[0];
-				var cF=fcF[1];
+				var fI=parseInt(fcI[0]);
+				var cI=parseInt(fcI[1]);
+				var fF=parseInt(fcF[0]);
+				var cF=parseInt(fcF[1]);
 				var vI=ele['valorNodoInicial'];
 				var vF=ele['valorNodoFinal'];
 				if (vF==vI){
 					aviso('Se encontraron algunas resistencias en cortocircuito. Verifique el circuito.');
 				}
-
-				/*var contador=contadorInicial;
-				//if(ind==0){
-				if(inc==1){
-					cuenta=contador;
-				} else {
-					cuenta=contador+800;
-				}*/
 				$.each(ele['resistencias'],function(i,e){
 					var a=e.split('/');
 					var b=a[0].split('-');
 					var fila=b[0];
 					var columna=b[1];
-					var orientacion=a[1];
-					var direccion='';
-					if(orientacion=='v'){
+					//var orientacion=a[1];
+					//var direccion='';
+					var direccion=a[1];
+					if(vI<vF){
+						direccion=opuesto(direccion);
+					}
+					/*if(orientacion=='v'){
 						if(vI>vF){ //Si valor inicial mayor que final
 							if(fI<fF){ //Si fila inicial más arriba que final
 								direccion='ab';
@@ -982,7 +866,7 @@ var nodos = {
 								direccion='de';
 							}
 						}
-					}
+					}*/
 					//contador=(i*800)+cuenta;
 					setTimeout(function(){
 						dibujar.polaridad(fila,columna,direccion);
@@ -992,9 +876,52 @@ var nodos = {
 				});
 			}
 		});
+		return contador;
 	},
-	'dibujar':function(){ //Esta función dería tener otro nombre, porque sirve también para asignar los valores d elas resistencias y servirá para otras cosas....
+	'nombresElementos':function(contadorInicial){
+		var contadorInicial = contadorInicial || 0;
+		var contador=contadorInicial;
+		var incR=0;
+		var lasResistencias = $('#tablero img[data-tipo="R"]');
+		$.each(lasResistencias,function(ind,ele){
+			incR++;
+			var r='R'+incR;
+			var o=$(ele).attr('data-ori');
+			if(o=='v'){
+				$(ele).siblings('.nombre-elemento').addClass('vertical');
+			} else {
+				$(ele).siblings('.nombre-elemento').addClass('horizontal');
+			}
+			$(ele).attr('data-nom',r);
+			setTimeout(function(){
+				$(ele).siblings('.nombre-elemento').text(r).show('slow');
+			},contador);
+			contador=contador+800;
+		});
+		var incI=0;
+		var lasCorrientes = $('#tablero img[data-tipo="I"]');
+		$.each(lasCorrientes,function(ind,ele){
+			incI++;
+			var r='I'+incI;
+			var o=$(ele).attr('data-ori');
+			if(o=='v'){
+				$(ele).siblings('.nombre-elemento').addClass('vertical');
+			} else {
+				$(ele).siblings('.nombre-elemento').addClass('horizontal');
+			}
+			$(ele).attr('data-nom',r);
+			setTimeout(function(){
+				$(ele).siblings('.nombre-elemento').text(r).show('slow');
+			},contador);
+			contador=contador+800;
+		});
+		return contador;
+	},
+	'dibujar':function(contadorInicial){ //Esta función dería tener otro nombre, porque sirve también para asignar los valores d elas resistencias y servirá para otras cosas....
+		var contadorInicial = contadorInicial || 0;
+		var contador=contadorInicial;
 		//Obtener el que tenga más puntos (inexacto, según la longitud de la cadena):
+		nodosValores=new Object;
 		var elCero={'indice':0,'longitud':0};
 		$.each(nodosUnicos,function(indi,elem){
 			if(elem.length>=elCero.longitud){
@@ -1007,11 +934,12 @@ var nodos = {
 		var nomenclatura=[];
 		var letraNodo="@";
 		var valorNodo=100;
-		var contador=0;
-		var cuenta=0;
+		//var contador=0;
+		//var cuenta=0;
 		$.each(nodosUnicos,function(ind,ele){
-			contador=cuenta*800;
-			cuenta++;
+			//contador=cuenta*800;
+			//cuenta++;
+			contador=contador+800;
 			if(ind==elCero){
 				var cadaPunto=ele.split(',');
 				$.each(cadaPunto,function(i,e){
@@ -1026,6 +954,9 @@ var nodos = {
 						$(celda).children('.icono-nodo').show(800);
 						$(celda).children('.identificador-nodo').show(800);
 					},contador);
+					//Valores e identificadores:
+					nodosValores[e]=0;
+					//Termina valores e identicadores.
 					//Empieza asignación de valores
 					$.each(recorridos,function(iii,eee){
 						if(e==eee['identificadorNodoInicial']){
@@ -1056,6 +987,9 @@ var nodos = {
 						$(celda).children('.icono-nodo').show(800);
 						$(celda).children('.identificador-nodo').show(800);
 					},contador);
+					//Valores e identificadores:
+					nodosValores[e]=valorNodo;
+					//Termina valores e identicadores.
 					//Empieza asignación de valores
 					$.each(recorridos,function(iii,eee){
 						if(e==eee['identificadorNodoInicial']){
@@ -1068,6 +1002,7 @@ var nodos = {
 					//Termina asignación de valores
 				});
 			}
+			console.log(nodosValores);
 		});
 		/*//Defino el último nodo no trivial como 0:
 		$('.celda>.identificador-nodo[data-identificador="'+letraNodo+'"]').attr('data-identificador','0').attr('data-valor','0').text('0');
@@ -1081,6 +1016,23 @@ var nodos = {
 		return contador+800;
 	}
 }
+
+
+
+
+
+function isNumeric(n) {
+	return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+
+
+
+//Esta funcion va al final de todo...
+escucharEventos();
+
+
 
 
 
