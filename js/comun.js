@@ -538,6 +538,7 @@ var circuito = {
 		$('.polaridad').removeClass('polaridad-h').removeClass('polaridad-v').html('').hide();
 		$('#nomenclatura').html('').hide();
 		$('#mensaje-error').hide();
+		$('.nombre-elemento').removeClass('horizontal').removeClass('vertical').html('').hide();
 	}
 }
 
