@@ -10,6 +10,20 @@ var filaDestino;
 
 
 
+function detectarNavegador(){
+	//alert("Estas utilizando "+navigator.vendor+" "+navigator.appVersion);
+	console.log(navigator);
+	var Chrome=new RegExp(/Chrome/i);
+	var Google=new RegExp(/Google/i);
+	var encuentroChrome=Chrome.test(navigator.appVersion);
+	var encuentroGoogle=Google.test(navigator.vendor);
+	if(!encuentroChrome && !encuentroGoogle){
+		$('#aviso-navegador').show();
+	}
+}
+detectarNavegador();
+
+
 
 function escucharEventos(){
 	var elementos = document.querySelectorAll('.arrastrable');
@@ -404,10 +418,6 @@ var circuito = {
 			var buscaColumna;
 			var buscoCelda;
 			if(lasConexiones.length>=3){
-				//var identificadorNodoInicial = $(this).siblings('.identificador-nodo').attr('data-identificador');
-				//var valorNodoInicial = $(this).siblings('.identificador-nodo').attr('data-valor');
-				//var heredadoNodoInicial = $(this).attr('data-her');
-				//console.log('Valor de nodo: '+valorNodoInicial);
 				var cel = this.parentElement;
 				var fi = posicion.fila(cel);
 				var co = posicion.columna(cel);
@@ -443,14 +453,15 @@ var circuito = {
 						var elElemento = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img');
 						if(elElemento.length>0){
 							var tipoElmnto = $(elElemento).attr('data-tipo');
+							var plrddElemento = $(elElemento).attr('data-pol');
 							//var orientacionElmnto = $(elElemento).attr('data-ori');
 							if(tipoElmnto=='R'){
 								rstncs.push(fila+'-'+columna+'/'+ruta);
 								//rstncs.push(fila+'-'+columna+'/'+orientacionElmnto);
 							} else if(tipoElmnto=='I'){
-								ftsCrnt.push(fila+'-'+columna+'/'+ruta);
+								ftsCrnt.push(fila+'-'+columna+'/'+ruta+'/'+plrddElemento);
 							} else if(tipoElmnto=='V'){
-								ftsVltj.push(fila+'-'+columna+'/'+ruta);
+								ftsVltj.push(fila+'-'+columna+'/'+ruta+'/'+plrddElemento);
 							}
 							if(tipoElmnto!='nodo'){
 								encuentroElemento=true;
@@ -466,12 +477,14 @@ var circuito = {
 								//Comprobación para evitar repetir mismo recorrido en sentido contrario:
 								var nuevoRecorrido=true;
 								$.each(recorridos,function(ii,obj){
-									if(obj.identificadorNodoInicial==identificadorNodoFinal && obj.identificadorNodoFinal==identificadorNodoInicial){
-										nuevoRecorrido=false;
-										return false;
+									if(obj.nuevoRecorrido){
+										if(obj.identificadorNodoInicial==identificadorNodoFinal && obj.identificadorNodoFinal==identificadorNodoInicial){
+											nuevoRecorrido=false;
+											return false;
+										}
 									}
 								});
-								if(nuevoRecorrido){
+								/*if(nuevoRecorrido){
 									//var ASCII = identificadorNodoInicial.charCodeAt(); //----------
 									//ASCII=((ASCII+1 >= 65 && ASCII+1 <= 90)) ? ASCII+1 : ASCII;  //----------
 									//identificadorNodoInicial=String.fromCharCode(ASCII); //----------
@@ -480,18 +493,12 @@ var circuito = {
 									var esteRecorrido={'identificadorNodoInicial':identificadorNodoInicial,'identificadorNodoFinal':identificadorNodoFinal,'valorNodoInicial':-1,'valorNodoFinal':-1,'resistencias':rstncs,'fuentesCorriente':ftsCrnt,'fuentesVoltaje':ftsVltj}
 
 									recorridos.push(esteRecorrido);
-									/*if(!encuentroElemento){ //Si es el mismo nodo...
-										var her = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img').attr('data-her');
-										if(!her){
-											if(heredadoNodoInicial){
-												var heredado=heredadoNodoInicial;
-											} else {
-												var heredado=identificadorNodoInicial;
-											}
-											$('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img').attr('data-her',heredado);
-										}
-									}*/
-								}
+									
+								}*/
+								//2015-11-22 anterior cambiado por siguiente:
+								var esteRecorrido={'identificadorNodoInicial':identificadorNodoInicial,'identificadorNodoFinal':identificadorNodoFinal,'valorNodoInicial':-1,'valorNodoFinal':-1,'resistencias':rstncs,'fuentesCorriente':ftsCrnt,'fuentesVoltaje':ftsVltj,'nuevoRecorrido':nuevoRecorrido}
+								recorridos.push(esteRecorrido);
+								//Fin 2015-11-22
 								i=100;
 							} else {
 								var yaEntré=false;
@@ -537,8 +544,10 @@ var circuito = {
 		$('.identificador-nodo').attr('data-identificador','').text('');
 		$('.polaridad').removeClass('polaridad-h').removeClass('polaridad-v').html('').hide();
 		$('#nomenclatura').html('').hide();
+		$('#ecuaciones').html('').hide();
 		$('#mensaje-error').hide();
 		$('.nombre-elemento').removeClass('horizontal').removeClass('vertical').html('').hide();
+		$('button[id^="paso-"]').prop('disabled',false).hide();
 	}
 }
 
@@ -601,6 +610,47 @@ var dibujar={
 		}
 		$(r).siblings('.polaridad').addClass(orntcn).html(p).show(800);
 	},
+	'nomenclatura':function(contadorInicial){
+		var contador = contadorInicial || 0;
+		nomenclatura.push('0');
+		nomenclatura=nomenclatura.join(' > ');
+		if(depuracion){
+			console.log('Nomenclatura: '+nomenclatura);
+		}
+		setTimeout(function(){
+			$('#mensaje-inicial').remove();
+			$('#nomenclatura').html('<h3><strong>Nomenclatura:</strong> <span class="text-nowrap">'+nomenclatura+'</span></h3>').slideDown();
+		},contador);
+		return contador+1000;
+	},
+	'ecuacion':function(contadorInicial){
+		var contador = contadorInicial || 0;
+		if(depuracion){
+			console.log('Ecuaciones:');
+			console.log(ecuacionesNodos);
+		}
+		if(ecuacionesNodos){
+			var ecu='';
+			$.each(ecuacionesNodos,function(ind,ele){
+				if(ind!=0){
+					var ec=ele.replace(/V([a-zA-Z0])/g,"V<small>$1</small>");
+					ec=ec.replace(/R([0-9]+)/g,"R<small>$1</small>");
+					ec=ec.replace(/I([0-9]+)/g,"I<small>$1</small>");
+					ec='<span class="text-nowrap">'+ec+'<span>';
+					var nd='<strong>&nbsp;&nbsp;&nbsp;Nodo '+ind+': </strong>';
+					ecu=ecu+'<h4>'+nd+ec+'</h4>';
+				}
+			});
+			ecu='<hr><h3><strong>Ecuaciones</strong></h3>'+ecu;
+			setTimeout(function(){
+				$('#mensaje-inicial').remove();
+				$('#ecuaciones').html(ecu).slideDown(1000);
+			},contador);
+			return contador+1000;
+		} else {
+			return false;
+		}
+	}
 	/*'nodos':function(){
 		circuito.limpiar();
 		var cadaElemento = $('#tablero .celda img[data-tipo="nodo"]');
@@ -653,37 +703,88 @@ var dibujar={
 
 
 
-/*
-function empezar(){
-	var comprobacion=circuito.comprobar();
-	if(comprobacion){
-		circuito.recorrer('identificarNodos');
-		var t=dibujar.nodos(); //quitada --------------cambiar o mejorar-----------------
+
+function empezar(paso){
+	var paso = paso || false;
+	if(paso){
+		var t=0;
+		paso=parseInt(paso);
+		if(isNaN(paso)){
+			alert('¡Ups! Hice algo mal...');
+			return;
+		} else if(paso==1){
+			t=nodos.nombresElementos();
+		} else if(paso==2){
+			t=nodos.dibujar(0);
+		} else if(paso==3){
+			t=dibujar.nomenclatura(0);
+		} else if(paso==4){
+			t=nodos.polaridadResistencias(0);
+		} else if(paso==5){
+			t=dibujar.ecuacion(0);
+		}
+		t=t+500;
+		var sigPaso=paso+1;
+		$('#paso-'+paso).prop('disabled',true);
+		$('#btnEmpezar').prop('disabled',true);
+		setTimeout(function(){
+			$('#paso-'+paso).prop('disabled',false).hide();
+			$('#btnEmpezar').prop('disabled',false);
+			$('#paso-'+sigPaso).slideDown(1000);
+		},t);
 	} else {
-		return;
-	}
-	setTimeout(function(){
-		circuito.recorrer('dibujarPolaridades');
-	},t);
-}*/
-
-
-function empezar(){
-	var comprobacion=circuito.comprobar();
-	if(comprobacion){
+		var pp = $('#comoEmpezarPP').prop('checked');
 		circuito.recorrer();
 		nodos.identificar();
-		var t1=nodos.nombresElementos();
-		var t2=nodos.dibujar(t1);
-		var t3=nodos.polaridadResistencias(t2);
-		console.log('t1: '+t1)
-		console.log('t2: '+t2)
-	} else {
-		return;
+		var comprobacion=circuito.comprobar();
+		if(comprobacion){
+			if(pp){
+				$('#paso-1').slideDown(800);
+			} else {
+				var t1=nodos.nombresElementos();
+				var t2=nodos.dibujar(t1);
+				var t3=dibujar.nomenclatura(t2+1000);
+				var t4=nodos.polaridadResistencias(t3+1000);
+				var t5=dibujar.ecuacion(t4+1000);
+				$('#btnEmpezar').prop('disabled',true);
+				$('button[id^="paso-"]').prop('disabled',true);
+				$('#paso-1').slideDown(1000);
+				setTimeout(function(){
+					$('#paso-1').hide();
+					$('#paso-2').slideDown(1000);
+				},t1);
+				setTimeout(function(){
+					$('#paso-2').hide();
+					$('#paso-3').slideDown(1000);
+				},t2);
+				setTimeout(function(){
+					$('#paso-3').hide();
+					$('#paso-4').slideDown(1000);
+				},t3);
+				setTimeout(function(){
+					$('#paso-4').hide();
+					$('#paso-5').slideDown(1000);
+				},t4);
+				setTimeout(function(){
+					$('#paso-5').hide();
+					$('button[id^="paso-"]').prop('disabled',false);
+					$('#btnEmpezar').prop('disabled',false);
+				},t5+1000);
+			}
+		} else {
+			return;
+		}
+	
 	}
 }
 
-
+/*
+var paso = $('#paso').val();
+			paso=parseInt(paso);
+			if(isNaN(paso)){
+				alert('¡Ups! Hice algo mal...');
+				return;
+			}*/
 
 
 
@@ -691,15 +792,17 @@ var ubiNodos; //Coordenadas
 var ideNodos; //Identificador
 var valNodos; //Valor
 var nodosUnicos;
-//var nodosIdentificadores;
+var nodosIdentificadores;
 var nodosValores;
 
 
 
+var ecuacionesNodos;
+var nomenclatura;
 
 
 
-var iconoNodo='<span class="glyphicon glyphicon-record icono-nodo" title="Nodo"></span>';
+var iconoNodo='<span class="glyphicon glyphicon-certificate icono-nodo" title="Nodo"></span>';
 var identificadorNodo='<span class="identificador-nodo"></span>'; // data-identificador="" data-valor=""
 var nodos = {
 	'identificar':function(){
@@ -710,104 +813,109 @@ var nodos = {
 		var pendientesI=[];
 		var pendientesF=[];
 		$.each(recorridos,function(ind,ele){
-			var buscoNodoI=ubiNodos.indexOf(ele['identificadorNodoInicial']);
-			var buscoNodoF=ubiNodos.indexOf(ele['identificadorNodoFinal']);
-			if(buscoNodoI == -1){
-				ubiNodos.push(ele['identificadorNodoInicial']);
-			}
-			if(buscoNodoF == -1){
-				ubiNodos.push(ele['identificadorNodoFinal']);
-			}
+			if(ele['nuevoRecorrido']){
+				var buscoNodoI=ubiNodos.indexOf(ele['identificadorNodoInicial']);
+				var buscoNodoF=ubiNodos.indexOf(ele['identificadorNodoFinal']);
+				if(buscoNodoI == -1){
+					ubiNodos.push(ele['identificadorNodoInicial']);
+				}
+				if(buscoNodoF == -1){
+					ubiNodos.push(ele['identificadorNodoFinal']);
+				}
 
-			var encontradoI=false;
-			var encontradoF=false;
-			var idEncontradoI,idEncontradoF;
-			$.each(nodosUnicos,function(i,e){
-				var aI=new RegExp(ele['identificadorNodoInicial']);
-				//console.log('1I: '+aI);
-				var bI=aI.test(e);
-				//console.log('2I: '+bI);
-				
-				var aF=new RegExp(ele['identificadorNodoFinal']);
-				//console.log('1F: '+aF)
-				var bF=aF.test(e);
-				//console.log('2F: '+bF)
-				if(bI){
-					encontradoI=true;
-					idEncontradoI=i;
-				}
-				if(bF){
-					encontradoF=true;
-					idEncontradoF=i;
-				}
-			});
-			//console.log('idEncontradoI: '+idEncontradoI+' __ idEncontradoF: '+idEncontradoF)
-			if(ele['resistencias'].length==0 && ele['fuentesCorriente'].length==0 && ele['fuentesVoltaje'].length==0){
-				if(encontradoI && !encontradoF){
-					nodosUnicos[idEncontradoI]=nodosUnicos[idEncontradoI]+','+ele['identificadorNodoFinal'];
-				}else if(!encontradoI && encontradoF){
-					nodosUnicos[idEncontradoF]=nodosUnicos[idEncontradoF]+','+ele['identificadorNodoInicial'];
-				} else if(!encontradoI && !encontradoF){
-					nodosUnicos.push(ele['identificadorNodoInicial']);
-					nodosUnicos.push(ele['identificadorNodoFinal']);
-				} else if(encontradoI && encontradoF && idEncontradoI!=idEncontradoF){ //Si se encuentran en diferentes lugares, reorganizarlos...
-					var buscoNI=nodosUnicos.indexOf(ele['identificadorNodoInicial']);
-					var buscoNF=nodosUnicos.indexOf(ele['identificadorNodoFinal']);
-					if(buscoNI>=0){
-						nodosUnicos.splice(buscoNI,1);
-						pendientesI.push(ele['identificadorNodoInicial']);
-					} else if(buscoNF>=0){
-						nodosUnicos.splice(buscoNF,1);
-						pendientesF.push(ele['identificadorNodoFinal']);
+				var encontradoI=false;
+				var encontradoF=false;
+				var idEncontradoI,idEncontradoF;
+				$.each(nodosUnicos,function(i,e){
+					var aI=new RegExp(ele['identificadorNodoInicial']);
+					//console.log('1I: '+aI);
+					var bI=aI.test(e);
+					//console.log('2I: '+bI);
+					
+					var aF=new RegExp(ele['identificadorNodoFinal']);
+					//console.log('1F: '+aF)
+					var bF=aF.test(e);
+					//console.log('2F: '+bF)
+					if(bI){
+						encontradoI=true;
+						idEncontradoI=i;
 					}
-					//¿Será posible que haya más de uno y que los elimine todos (1-2,3-4)? Revisar...
-				}
-			} else {
-				/*if(!encontradoI && !encontradoF){
-					nodosUnicos.push(ele['identificadorNodoInicial']);
-					nodosUnicos.push(ele['identificadorNodoFinal']);
-				}*/
-				//Verificar esto...
-				if(!encontradoI){
-					nodosUnicos.push(ele['identificadorNodoInicial']);
-				}
-				if(!encontradoF){
-					nodosUnicos.push(ele['identificadorNodoFinal']);
+					if(bF){
+						encontradoF=true;
+						idEncontradoF=i;
+					}
+				});
+				if(ele['resistencias'].length==0 && ele['fuentesCorriente'].length==0 && ele['fuentesVoltaje'].length==0){
+					if(encontradoI && !encontradoF){
+						nodosUnicos[idEncontradoI]=nodosUnicos[idEncontradoI]+','+ele['identificadorNodoFinal'];
+					}else if(!encontradoI && encontradoF){
+						nodosUnicos[idEncontradoF]=nodosUnicos[idEncontradoF]+','+ele['identificadorNodoInicial'];
+					} else if(!encontradoI && !encontradoF){
+						nodosUnicos.push(ele['identificadorNodoInicial']);
+						nodosUnicos.push(ele['identificadorNodoFinal']);
+					} else if(encontradoI && encontradoF && idEncontradoI!=idEncontradoF){ //Si se encuentran en diferentes lugares, reorganizarlos...
+						var buscoNI=nodosUnicos.indexOf(ele['identificadorNodoInicial']);
+						var buscoNF=nodosUnicos.indexOf(ele['identificadorNodoFinal']);
+						if(buscoNI>=0){
+							nodosUnicos.splice(buscoNI,1);
+							pendientesI.push(ele['identificadorNodoInicial']);
+						} else if(buscoNF>=0){
+							nodosUnicos.splice(buscoNF,1);
+							pendientesF.push(ele['identificadorNodoFinal']);
+						}
+						//¿Será posible que haya más de uno y que los elimine todos (1-2,3-4)? Revisar...
+					}
+				} else {
+					/*if(!encontradoI && !encontradoF){
+						nodosUnicos.push(ele['identificadorNodoInicial']);
+						nodosUnicos.push(ele['identificadorNodoFinal']);
+					}*/
+					//Verificar esto...
+					if(!encontradoI){
+						nodosUnicos.push(ele['identificadorNodoInicial']);
+					}
+					if(!encontradoF){
+						nodosUnicos.push(ele['identificadorNodoFinal']);
+					}
 				}
 			}
 		});
 
 		$.each(pendientesI,function(ind,ele){
 			$.each(recorridos,function(i,e){
-				if(e['identificadorNodoInicial']==ele && e['resistencias'].length==0 && e['fuentesCorriente'].length==0 && e['fuentesVoltaje'].length==0){
-					var a=new RegExp(e['identificadorNodoFinal']);
-					$.each(nodosUnicos,function(ii,ee){
-						var b=a.test(ee);
-						if(b){
-							nodosUnicos[ii]=nodosUnicos[ii]+','+ele;
-							var c=nodosUnicos.indexOf(ele);
-							if(c>=0){
-								nodosUnicos.splice(c,1);//Esto no debería ser necesario, pero es necesario...
+				if(e['nuevoRecorrido']){
+					if(e['identificadorNodoInicial']==ele && e['resistencias'].length==0 && e['fuentesCorriente'].length==0 && e['fuentesVoltaje'].length==0){
+						var a=new RegExp(e['identificadorNodoFinal']);
+						$.each(nodosUnicos,function(ii,ee){
+							var b=a.test(ee);
+							if(b){
+								nodosUnicos[ii]=nodosUnicos[ii]+','+ele;
+								var c=nodosUnicos.indexOf(ele);
+								if(c>=0){
+									nodosUnicos.splice(c,1);//Esto no debería ser necesario, pero es necesario...
+								}
 							}
-						}
-					});
+						});
+					}
 				}
 			});
 		});
 		$.each(pendientesF,function(ind,ele){
 			$.each(recorridos,function(i,e){
-				if(e['identificadorNodoFinal']==ele && e['resistencias'].length==0 && e['fuentesCorriente'].length==0 && e['fuentesVoltaje'].length==0){
-					var a=new RegExp(e['identificadorNodoInicial']);
-					$.each(nodosUnicos,function(ii,ee){
-						var b=a.test(ee);
-						if(b){
-							nodosUnicos[ii]=nodosUnicos[ii]+','+ele;
-							var c=nodosUnicos.indexOf(ele);
-							if(c>=0){
-								nodosUnicos.splice(c,1);//Esto no debería ser necesario, pero es necesario...
+				if(e['nuevoRecorrido']){
+					if(e['identificadorNodoFinal']==ele && e['resistencias'].length==0 && e['fuentesCorriente'].length==0 && e['fuentesVoltaje'].length==0){
+						var a=new RegExp(e['identificadorNodoInicial']);
+						$.each(nodosUnicos,function(ii,ee){
+							var b=a.test(ee);
+							if(b){
+								nodosUnicos[ii]=nodosUnicos[ii]+','+ele;
+								var c=nodosUnicos.indexOf(ele);
+								if(c>=0){
+									nodosUnicos.splice(c,1);//Esto no debería ser necesario, pero es necesario...
+								}
 							}
-						}
-					});
+						});
+					}
 				}
 			});
 		});
@@ -815,73 +923,166 @@ var nodos = {
 	'polaridadResistencias':function(contadorInicial){
 		var contadorInicial = contadorInicial || 0;
 		var contador=contadorInicial;
+		//Empieza ecuación:
+		ecuacionesNodos=new Object;
+		var recorridosEcTemp=new Object;
+		//Termina ecuación.
 		$.each(recorridos,function(ind,ele){
-			if(ele['resistencias'].length>0){
-				var fcI=ele['identificadorNodoInicial'].split('-');
-				var fcF=ele['identificadorNodoFinal'].split('-');
-				var fI=parseInt(fcI[0]);
-				var cI=parseInt(fcI[1]);
-				var fF=parseInt(fcF[0]);
-				var cF=parseInt(fcF[1]);
-				var vI=ele['valorNodoInicial'];
-				var vF=ele['valorNodoFinal'];
-				if (vF==vI){
-					aviso('Se encontraron algunas resistencias en cortocircuito. Verifique el circuito.');
-				}
-				$.each(ele['resistencias'],function(i,e){
-					var a=e.split('/');
-					var b=a[0].split('-');
-					var fila=b[0];
-					var columna=b[1];
-					//var orientacion=a[1];
-					//var direccion='';
-					var direccion=a[1];
-					if(vI<vF){
-						direccion=opuesto(direccion);
-					}
-					/*if(orientacion=='v'){
-						if(vI>vF){ //Si valor inicial mayor que final
-							if(fI<fF){ //Si fila inicial más arriba que final
-								direccion='ab';
-							} else {
-								direccion='ar';
-							}
-						} else {
-							if(fI<fF){
-								direccion='ar';
-							} else {
-								direccion='ab';
-							}
-						}
-					} else {
-						if(vI>vF){ //Si valor inicial mayor que final
-							if(cI<cF){ //Si columna inicial más arriba que final
-								direccion='de';
-							} else {
-								direccion='iz';
-							}
-						} else {
-							if(cI<cF){
-								direccion='iz';
-							} else {
-								direccion='de';
-							}
-						}
-					}*/
-					//contador=(i*800)+cuenta;
-					setTimeout(function(){
-						dibujar.polaridad(fila,columna,direccion);
-					},contador);
-					//console.log('inc: '+inc+'. iii: '+i+'. cuenta:'+cuenta+'. contador: '+contador)
-					contador=contador+800;
-				});
+			var vI=ele['valorNodoInicial'];
+			var vF=ele['valorNodoFinal'];
+			var plrddCrnt=false;
+			//Empieza obtención de nombre para ecuación:
+			var nombresCrnt='';
+			//Termina obtención de nombre
+			if(ele['fuentesCorriente'].length>0){
+				//Tiene en cuenta sólo la primera. ¿Qué pasaría si hubiera más de una?
+				var fntCrnt=ele['fuentesCorriente'][0];
+				fntCrnt=fntCrnt.split('/');
+				plrddCrnt=fntCrnt[2];
+				var drccnCrnt=fntCrnt[1];
+				//Empieza obtención de nombre para ecuación:
+				var b=fntCrnt[0].split('-');
+				var fila=b[0];
+				var columna=b[1];
+				nombresCrnt = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img').attr('data-nom');
+				//Termina obtención de nombre
 			}
+			//////////////if(ele['nuevoRecorrido']){
+				/*if (vF==vI){
+					aviso('Se encontraron algunas resistencias en cortocircuito. Verifique el circuito.');
+				}*/
+				var nombresRstcs=[];
+				if(ele['resistencias'].length>0){
+					//var fcI=ele['identificadorNodoInicial'].split('-');
+					//var fcF=ele['identificadorNodoFinal'].split('-');
+					//var fI=parseInt(fcI[0]);
+					//var cI=parseInt(fcI[1]);
+					//var fF=parseInt(fcF[0]);
+					//var cF=parseInt(fcF[1]);
+					$.each(ele['resistencias'],function(i,e){
+						var a=e.split('/');
+						var b=a[0].split('-');
+						var fila=b[0];
+						var columna=b[1];
+						var direccion=a[1];
+						if(vI<vF){
+							direccion=opuesto(direccion);
+						}
+						if(plrddCrnt){
+							if((drccnCrnt=='iz' ||drccnCrnt=='ar') && plrddCrnt=='+-'){
+								direccion=opuesto(direccion);
+							} else if((drccnCrnt=='de' ||drccnCrnt=='ab') && plrddCrnt=='-+'){
+								direccion=opuesto(direccion);
+							}
+						}
+						if(ele['nuevoRecorrido']){
+							setTimeout(function(){
+								dibujar.polaridad(fila,columna,direccion);
+							},contador);
+							contador=contador+800;
+						}
+						//Empieza obtención de nombres para ecuación
+						var nom = $('#tablero>.fila[data-pos="'+fila+'"]>.celda[data-pos="'+columna+'"]>img').attr('data-nom');
+						nombresRstcs.push(nom);
+						//Termina obtención de nombres
+					});
+					//Empieza obtención de nombres para ecuación
+					nombresRstcs=nombresRstcs.join('+');
+					//Termina obtención de nombres
+				}
+			//////////////}
+			//Empieza obtención de nombres para ecuación
+			//var explotoI=ele['identificadorNodoInicial'].split('-');
+			//var filaInicial=parseInt(explotoI[0]);
+			//var columnaInicial=parseInt(explotoI[1]);
+			//var explotoF=ele['identificadorNodoFinal'].split('-');
+			//var filaFinal=parseInt(explotoF[0]);
+			//var columnaFinal=parseInt(explotoF[1]);
+			//var nomNodoInicial = $('#tablero>.fila[data-pos="'+filaInicial+'"]>.celda[data-pos="'+columnaInicial+'"]>img').attr('data-nom');
+			var idI=ele['identificadorNodoInicial'];
+			var idF=ele['identificadorNodoFinal'];
+			var nomNodoInicial=nodosIdentificadores[idI];
+			var nomNodoFinal=nodosIdentificadores[idF];
+			var ec;
+			if(nombresRstcs.length>3){
+				nombresRstcs='('+nombresRstcs+')';
+			}
+			var signo='+';
+			if(vI>vF /*&& !ecuacionesNodos.nomNodoInicial*/){
+				if(!plrddCrnt && nombresRstcs){
+					ec='(V'+nomNodoInicial+'-V'+nomNodoFinal+')/'+nombresRstcs;
+					signo='-';
+				} else if(plrddCrnt && nombresCrnt){
+					ec=nombresCrnt;
+					if((drccnCrnt=='iz' || drccnCrnt=='ar') && plrddCrnt=='-+'){
+						signo='-';
+					} else if((drccnCrnt=='de' || drccnCrnt=='ab') && plrddCrnt=='+-'){
+						signo='-';
+					}
+				}
+				/*var elNodo=nomNodoInicial;
+				var nodoNodo=nomNodoInicial+'-'+nomNodoFinal;
+				if(!ele['nuevoRecorrido']){
+					console.log('repetidoooooooooooo')
+				}*/
+				if(ele['nuevoRecorrido']){
+					var elNodo=nomNodoInicial;
+					var nodoNodo=nomNodoInicial+'-'+nomNodoFinal;
+				} else {
+					var elNodo=nomNodoFinal;
+					var nodoNodo=nomNodoFinal+'-'+nomNodoInicial;
+					if(signo=='-'){signo='+'}
+					else if(signo=='+'){signo='+'}
+				}
+			} else if(vI<vF /*&& !ecuacionesNodos.nomNodoFinal*/){
+				if(!plrddCrnt && nombresRstcs){
+					ec='(V'+nomNodoFinal+'-V'+nomNodoInicial+')/'+nombresRstcs;
+					signo='-';
+				} else if(plrddCrnt && nombresCrnt){
+					ec=nombresCrnt;
+					if((drccnCrnt=='iz' || drccnCrnt=='ar') && plrddCrnt=='+-'){
+						signo='-';
+					} else if((drccnCrnt=='de' || drccnCrnt=='ab') && plrddCrnt=='-+'){
+						signo='-';
+					}
+				} else {
+					console.log('yyyyyyyyy');
+				}
+				/*
+				var elNodo=nomNodoFinal;
+				var nodoNodo=nomNodoFinal+'-'+nomNodoInicial;*/
+				if(ele['nuevoRecorrido']){
+					var elNodo=nomNodoFinal;
+					var nodoNodo=nomNodoFinal+'-'+nomNodoInicial;
+				} else {
+					var elNodo=nomNodoInicial;
+					var nodoNodo=nomNodoInicial+'-'+nomNodoFinal;
+					if(signo=='-'){signo='+'}
+					else if(signo=='+'){signo='+'}
+				}
+			}
+			if(ec){
+				if(recorridosEcTemp[nodoNodo]){
+					//Todo bien...
+				} else {
+					recorridosEcTemp[nodoNodo]=ec; // ---- falta signo....
+				}
+				console.log(recorridosEcTemp);
+				if(ecuacionesNodos[elNodo]){
+					ec=ecuacionesNodos[elNodo]+' '+signo+' '+ec;
+				} else {
+					if(signo=='-'){
+						ec=signo+ec;
+					}
+				}
+				ecuacionesNodos[elNodo]=ec;
+			}
+			//Termina obtención de nombres
 		});
 		return contador;
 	},
 	'nombresElementos':function(contadorInicial){
-		var contadorInicial = contadorInicial || 0;
-		var contador=contadorInicial;
+		var contador = contadorInicial || 0;
 		var incR=0;
 		var lasResistencias = $('#tablero img[data-tipo="R"]');
 		$.each(lasResistencias,function(ind,ele){
@@ -918,11 +1119,15 @@ var nodos = {
 		});
 		return contador;
 	},
+	'ecuaciones':function(){
+
+	},
 	'dibujar':function(contadorInicial){ //Esta función dería tener otro nombre, porque sirve también para asignar los valores d elas resistencias y servirá para otras cosas....
-		var contadorInicial = contadorInicial || 0;
-		var contador=contadorInicial;
+		var contador = contadorInicial || 0;
+		//var contador=contadorInicial;
 		//Obtener el que tenga más puntos (inexacto, según la longitud de la cadena):
 		nodosValores=new Object;
+		nodosIdentificadores=new Object;
 		var elCero={'indice':0,'longitud':0};
 		$.each(nodosUnicos,function(indi,elem){
 			if(elem.length>=elCero.longitud){
@@ -932,7 +1137,7 @@ var nodos = {
 		});
 		elCero=elCero.indice;
 		//Asignar Valores e identificadores:
-		var nomenclatura=[];
+		nomenclatura=[];
 		var letraNodo="@";
 		var valorNodo=100;
 		//var contador=0;
@@ -940,10 +1145,11 @@ var nodos = {
 		$.each(nodosUnicos,function(ind,ele){
 			//contador=cuenta*800;
 			//cuenta++;
-			contador=contador+800;
+			//contador=contador+800;
 			if(ind==elCero){
 				var cadaPunto=ele.split(',');
 				$.each(cadaPunto,function(i,e){
+					contador=contador+800;
 					var estePunto=e.split('-');
 					var fila=estePunto[0];
 					var columna=estePunto[1];
@@ -957,15 +1163,18 @@ var nodos = {
 					},contador);
 					//Valores e identificadores:
 					nodosValores[e]=0;
+					nodosIdentificadores[e]=0;
 					//Termina valores e identicadores.
 					//Empieza asignación de valores
 					$.each(recorridos,function(iii,eee){
-						if(e==eee['identificadorNodoInicial']){
-							recorridos[iii].valorNodoInicial=0;
-						} else if(e==eee['identificadorNodoFinal']){
-							recorridos[iii].valorNodoFinal=0;
-						}
-						//No salir del each (return false) porque se repiten por cada conexión de nodo...
+						//if(eee['nuevoRecorrido']){
+							if(e==eee['identificadorNodoInicial']){
+								recorridos[iii].valorNodoInicial=0;
+							} else if(e==eee['identificadorNodoFinal']){
+								recorridos[iii].valorNodoFinal=0;
+							}
+							//No salir del each (return false) porque se repiten por cada conexión de nodo...
+						//}
 					});
 					//Termina asignación de valores
 				});
@@ -977,6 +1186,7 @@ var nodos = {
 				nomenclatura.push(letraNodo);
 				var cadaPunto=ele.split(',');
 				$.each(cadaPunto,function(i,e){
+					contador=contador+800;
 					var estePunto=e.split('-');
 					var fila=estePunto[0];
 					var columna=estePunto[1];
@@ -990,30 +1200,36 @@ var nodos = {
 					},contador);
 					//Valores e identificadores:
 					nodosValores[e]=valorNodo;
+					nodosIdentificadores[e]=letraNodo;
 					//Termina valores e identicadores.
 					//Empieza asignación de valores
 					$.each(recorridos,function(iii,eee){
-						if(e==eee['identificadorNodoInicial']){
-							recorridos[iii].valorNodoInicial=valorNodo;
-						} else if(e==eee['identificadorNodoFinal']){
-							recorridos[iii].valorNodoFinal=valorNodo;
-						}
-						//No salir del each (return false) porque se repiten por cada conexión de nodo...
+						//if(eee['nuevoRecorrido']){
+							if(e==eee['identificadorNodoInicial']){
+								recorridos[iii].valorNodoInicial=valorNodo;
+							} else if(e==eee['identificadorNodoFinal']){
+								recorridos[iii].valorNodoFinal=valorNodo;
+							}
+							//No salir del each (return false) porque se repiten por cada conexión de nodo...
+						//}
 					});
 					//Termina asignación de valores
 				});
 			}
-			console.log(nodosValores);
+			//console.log(nodosValores);
 		});
 		/*//Defino el último nodo no trivial como 0:
 		$('.celda>.identificador-nodo[data-identificador="'+letraNodo+'"]').attr('data-identificador','0').attr('data-valor','0').text('0');
 		nomenclatura.pop();*/
+		//Siguiente bloque, pasado a función:
+		/*
 		nomenclatura.push('0');
 		nomenclatura=nomenclatura.join(' > ');
 		if(depuracion){
 			console.log('Nomenclatura: '+nomenclatura);
 		}
-		$('#nomenclatura').html('<h3>Nomenclatura: '+nomenclatura+'</h3>').show('slow');
+		$('#nomenclatura').html('<h3><strong>Nomenclatura:</strong> <span class="text-nowrap">'+nomenclatura+'</span></h3>').slideDown(800);
+		*/
 		return contador+800;
 	}
 }

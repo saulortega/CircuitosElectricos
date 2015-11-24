@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="./css/bootstrap.min.css">
 		<link rel="stylesheet" href="./css/comun.css">
-		<title>Borrador de circuitos</title>
+		<title>Proyecto de autoestudio Circuitos Eléctricos</title>
 	</head>
 
 	<body class="container text-center">
@@ -12,6 +12,19 @@
 
 		<h1>Proyecto de autoestudio para Circuitos eléctricos I</h1>
 		<!--<h3>Este es un borrador con funcionalidades limitadas y algo rústico e inútil por el momento.</h3>-->
+		<div class="row">
+			<div class="col-sm-2">&nbsp;</div>
+			<div class="col-sm-8">
+				<div class="alert alert-warning" role="alert" style="display:none;padding:5px" id="aviso-navegador">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<small>Este proyecto sólo lo hemos probado en Chrome. Debería funcionar bien con otros navegadores, pero no lo garantizo. ¡Prueba y coméntame! :)</small>
+				</div>
+			</div>
+			<div class="col-sm-2">&nbsp;</div>
+		</div>
+		
 
 		<hr>
 
@@ -176,34 +189,76 @@
 
 
 		<div id="mensaje-error" class="alert alert-warning" style="display:none;font-weight:bold;margin-top:10px"></div>
-		<div id="nomenclatura" class="well"></div>
+		<div class="row text-left" style="margin-top:20px">
+			<div class="col-md-6">
+				<div class="caja">
+					<h3>¿Cómo quiere empezar?</h3>
+					<div class="radio margen-iz-10">
+						<label>
+							<input type="radio" name="comoEmpezar" id="comoEmpezarTP" value="1" checked>
+							Mostrarme todos los pasos al tiempo
+						</label>
+					</div>
+					<div class="radio margen-iz-10">
+						<label>
+							<input type="radio" name="comoEmpezar" id="comoEmpezarPP" value="1">
+							Dejarme hacer paso a paso
+						</label>
+					</div>
+					<div class="col-sm-6">
+						<button class="btn btn-info btn-block" onclick="empezar()" id="btnEmpezar">Empezar</button>
+					</div>
+					<div class="col-sm-6">
+						<button class="btn btn-success btn-block" id="paso-1" style="display:none" onclick="empezar(1)">Paso 1: Nombrar elementos</button>
+						<button class="btn btn-success btn-block" id="paso-2" style="display:none" onclick="empezar(2)">Paso 2: Identificar nodos</button>
+						<button class="btn btn-success btn-block" id="paso-3" style="display:none" onclick="empezar(3)">Paso 3: Establecer nomenclatura</button>
+						<button class="btn btn-success btn-block" id="paso-4" style="display:none" onclick="empezar(4)">Paso 4: Dibujar polaridades</button>
+						<button class="btn btn-success btn-block" id="paso-5" style="display:none" onclick="empezar(5)">Paso 5: Ecuaciones</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="caja">
+					<div id="mensaje-inicial" class="help-block" style="margin:25px;">
+						<p>Dibuje un circuito, elija cómo quiere que se muestre el paso a paso, y pulse en el botón Empezar.</p>
+						<p>PD: Se aceptan comentarios y sugerencias. :)</p>
+					</div>
+					<div id="nomenclatura"></div>
+					<div id="ecuaciones"></div>
+				</div>
+			</div>
+		</div>
+		
+		
 
-		<button class="btn btn-lg btn-success" onclick="empezar()">Empezar</button>
+		
 
 		<hr>
 
 		<div class="col-md-4 text-left">
 			<h3>Acerca de</h3>
 			<p>Este es un proyecto de autoestudio para Circuitos Eléctricos I, Ingeniería de Telecomunicaciones, Politécnico Grancolombiano.</p>
-			<p>Este grupo está integrado por Saúl Ortega (desarrollo), Kevin Rodríguez (análisis y pruebas), y Rodrigo (logística).</p>
+			<p>Este grupo está integrado por Saúl Ortega (desarrollo) y Kevin Rodríguez (análisis y pruebas).</p>
 			<p>El objetivo de este proyecto es desarrollar una aplicación con capacidad de analizar y desarrollar un circuito electrónico mostrando el paso a paso mediante las leyes de Kirchoff. Inicialmente se prevé que analice y plantee las ecuaciones mediante análisis de nodos. Posteriormente puede ampliarse para realizar también análisis de mallas.</p>
 		</div>
 
 		<div class="col-sm-6 col-md-4 text-left">
 			<h3>Uso</h3>
 			<p>Arrastre los elementos de la "caja de herramientas" de la parte superior al tablero y dibuje un circuito. Una vez esté hecho el esquema del circuito, pulse el botón "Empezar".</p>
-			<p>La aplicación validará la correcta estructura del circuito, y, si el circuito se encuentra bien hecho, marcará de manera automática los nodos y las polaridades en las resistencias.</p>
-			<p>En esta fase de desarrollo la aplicación aún no tiene la capacidad de interpretar valores absolutos dados a los elementos del circuito; sólo dibuja el esquema de nodos y polaridades.</p>
+			<p>La aplicación validará la correcta estructura del circuito, y, si el circuito se encuentra bien hecho, marcará de manera automática los nodos y las polaridades en las resistencias, y generará las ecuaciones.</p>
+			<p>En esta fase de desarrollo la aplicación aún no tiene la capacidad de interpretar valores absolutos dados a los elementos del circuito; sólo dibuja el esquema de nodos y polaridades, y genera ecuaciones.</p>
 		</div>
 
 		<div class="col-sm-6 col-md-4 text-left">
 			<h3>Funcionalidades</h3>
-			<p>Este proyecto se encuentra aún en una fase de desarrollo muy temprana y posee funcionalidades muy limitadas. A continuación se describe las carácterísticas hasta el momento:</p>
+			<!--<p>Este proyecto se encuentra aún en una fase de desarrollo temprana y posee funcionalidades limitadas. A continuación se describe las carácterísticas hasta el momento:</p>-->
 			<ul>
 				<li>Valida la correcta o errónea construcción del circuito.</li>
 				<li>Encuentra y marca los nodos no triviales.</li>
 				<li>Crea automáticamente la nomenclatura de los nodos encontrados, según el orden en que se encuentran.</li>
-				<li>Dibuja la polaridad de las resistencias según la nomenclatura de los nodos.</li>
+				<li>Dibuja la polaridad de las resistencias según la dirección de la corriente si la hay, o según la nomenclatura de los nodos si no hay corriente de nodo a nodo.</li>
+				<li>Genera las ecuaciones de los nodos.</li>
+				<li>Permite realizar el procedimiento paso a paso cuando el usuario quiera, o todos los pasos uno tras otro.</li>
 			</ul>
 		</div>
 
