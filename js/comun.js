@@ -12,7 +12,7 @@ var filaDestino;
 
 function detectarNavegador(){
 	//alert("Estas utilizando "+navigator.vendor+" "+navigator.appVersion);
-	console.log(navigator);
+	//console.log(navigator);
 	var Chrome=new RegExp(/Chrome/i);
 	var Google=new RegExp(/Google/i);
 	var encuentroChrome=Chrome.test(navigator.appVersion);
@@ -636,6 +636,7 @@ var dibujar={
 					var ec=ele.replace(/V([a-zA-Z0])/g,"V<small>$1</small>");
 					ec=ec.replace(/R([0-9]+)/g,"R<small>$1</small>");
 					ec=ec.replace(/I([0-9]+)/g,"I<small>$1</small>");
+					ec=ec+' = 0';
 					ec='<span class="text-nowrap">'+ec+'<span>';
 					var nd='<strong>&nbsp;&nbsp;&nbsp;Nodo '+ind+': </strong>';
 					ecu=ecu+'<h4>'+nd+ec+'</h4>';
@@ -1032,7 +1033,7 @@ var nodos = {
 					var elNodo=nomNodoFinal;
 					var nodoNodo=nomNodoFinal+'-'+nomNodoInicial;
 					if(signo=='-'){signo='+'}
-					else if(signo=='+'){signo='+'}
+					else if(signo=='+'){signo='-'}
 				}
 			} else if(vI<vF /*&& !ecuacionesNodos.nomNodoFinal*/){
 				if(!plrddCrnt && nombresRstcs){
@@ -1045,8 +1046,6 @@ var nodos = {
 					} else if((drccnCrnt=='de' || drccnCrnt=='ab') && plrddCrnt=='-+'){
 						signo='-';
 					}
-				} else {
-					console.log('yyyyyyyyy');
 				}
 				/*
 				var elNodo=nomNodoFinal;
@@ -1058,7 +1057,7 @@ var nodos = {
 					var elNodo=nomNodoInicial;
 					var nodoNodo=nomNodoInicial+'-'+nomNodoFinal;
 					if(signo=='-'){signo='+'}
-					else if(signo=='+'){signo='+'}
+					else if(signo=='+'){signo='-'}
 				}
 			}
 			if(ec){
